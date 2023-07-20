@@ -22,7 +22,7 @@ cd cbr-parser
 ```
 
 ```
-cp ./.env.exmple ./.env
+cp ./.env.example ./.env
 ```
 
 ```
