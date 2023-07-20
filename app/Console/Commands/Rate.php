@@ -2,9 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Constenats\CurrencyCodes;
 use App\Services\RateService;
 use Exception;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Validator;
+use ReflectionClass;
 
 class Rate extends Command
 {
@@ -13,7 +16,7 @@ class Rate extends Command
      *
      * @var string
      */
-    protected $signature = 'app:rate';
+    protected $signature = 'app:rate {currency} {baseCurrency=RUR}';
 
     /**
      * The console command description.
@@ -30,11 +33,26 @@ class Rate extends Command
         $service = new RateService();
         $rate = '';
 
-        try {
-            $rate = $service->getRate('USD','RUR');
+        $currencyList = (new ReflectionClass(CurrencyCodes::class))->getConstants();
 
-        }catch (Exception $e)
-        {
+        $validator = Validator::make([
+            'currency' => $this->argument('currency'),
+            'baseCurrency' => $this->argument('baseCurrency'),
+        ], [
+            'currency' => 'required|in:' . implode(',', $currencyList),
+            'baseCurrency' => 'required|in:' . implode(',', $currencyList),
+        ]);
+
+        if ($validator->fails()) {
+            $this->error($validator->messages());
+            return;
+        }
+
+
+        try {
+            $rate = $service->getRate($this->argument('currency'), $this->argument('baseCurrency'));
+
+        } catch (Exception $e) {
             $this->error($e->getMessage());
         }
 

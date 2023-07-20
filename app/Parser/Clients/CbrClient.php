@@ -7,7 +7,6 @@ use App\Parser\Exceptions\EmptyDataException;
 use DateTime;
 use Exception;
 use Illuminate\Support\Facades\Http;
-use phpseclib3\File\ASN1\Maps\Attribute;
 
 class CbrClient
 {
@@ -37,7 +36,7 @@ class CbrClient
             $tmp->currency_id = $one->{"@attributes"}->ID;
             $tmp->num_code = $one->NumCode;
             $tmp->char_code = $one->CharCode;
-            $tmp->nominal =(int) $one->Nominal;
+            $tmp->nominal = (int)$one->Nominal;
             $tmp->value = (float)str_replace(',', '.', $one->Value);
             $tmp->name = $one->Name;
             $return[] = $tmp;
@@ -46,16 +45,35 @@ class CbrClient
         return $return;
     }
 
+    /**
+     * Download data from service provider
+     *
+     * @param DateTime $date
+     * @return string
+     */
     private function getData(DateTime $date): string
     {
         $link = $this->getRequestLink($date->format('d/m/Y'));
         return Http::get($link)->body();
     }
 
+    /**
+     * Build Link with date variable
+     *      *
+     * @param string $date
+     * @return string
+     */
     private function getRequestLink(string $date): string
     {
         return self::BASE_URL . '?date_req=' . $date;
     }
+
+    /**
+     * Convert XML to Json
+     *
+     * @param $response
+     * @return bool|object
+     */
 
     private function parseResponse($response): bool|object
     {

@@ -14,6 +14,8 @@ class CurrencyService
 {
 
     /**
+     * Parse single date by default using current date
+     *
      * @throws EmptyDataException
      * @throws Exception
      */
@@ -29,15 +31,5 @@ class CurrencyService
         }
 
     }
-
-    public function getRate($code)
-    {
-
-        Cache::remember($code,Config::CURRENCY_CACHE_TIME,function(){
-
-        });
-
-    }
-
 
 }

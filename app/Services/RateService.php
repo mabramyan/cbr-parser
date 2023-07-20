@@ -12,7 +12,6 @@ use DateInterval;
 use DateTime;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 
 class RateService
 {
@@ -27,6 +26,8 @@ class RateService
         if ($currencyCode === $baseCurrencyCode) {
             throw new WrongCurrencyCodeException('Currency code should not be the same');
         }
+
+        //initial default values for currency and baseCurrency
 
         $currency = new Currency([
             'value' => 1,
@@ -62,6 +63,7 @@ class RateService
         }
 
 
+        //calculate cross rate
         $nominal = $currency->nominal;
         $rate = ($baseCurrency->nominal / $baseCurrency->value) * $currency->value;
         $oldRate = ($baseCurrencyOld->nominal / $baseCurrencyOld->value) * $currencyOld->value;

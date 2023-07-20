@@ -22,17 +22,17 @@ class ParseRates extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Parse rates from https://cbr.ru for last 180 days';
 
     /**
      * Execute the console command.
-     * @throws EmptyDataException
      */
     public function handle()
     {
         $date = new DateTime();
         $i = 0;
         do {
+            //add Load currency job for each day
             LoadCurrencyJob::dispatch($date);
             $date->sub(new DateInterval('P1D'));
             $i++;
