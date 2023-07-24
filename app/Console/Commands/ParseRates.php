@@ -41,9 +41,9 @@ class ParseRates extends Command
             //add Load currency job for each day
             if (empty($parser->state)) {
                 LoadCurrencyJob::dispatch($date);
+                $parser->state = 1;
+                $parser->save();
             }
-            $parser->state = 1;
-            $parser->save();
             $date->sub(new DateInterval('P1D'));
             $i++;
         } while ($i < 180);
