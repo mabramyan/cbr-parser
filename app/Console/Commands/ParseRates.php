@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\LoadCurrencyJob;
+use App\Models\Parser;
 use App\Parser\Exceptions\EmptyDataException;
 use DateInterval;
 use DateTime;
@@ -32,8 +33,17 @@ class ParseRates extends Command
         $date = new DateTime();
         $i = 0;
         do {
+            $parser = Parser::firstOrCreate(
+                [
+                    'date' => $date->format('Y-m-d')
+                ]
+            );
             //add Load currency job for each day
-            LoadCurrencyJob::dispatch($date);
+            if (empty($parser->state)) {
+                LoadCurrencyJob::dispatch($date);
+            }
+            $parser->state = 1;
+            $parser->save();
             $date->sub(new DateInterval('P1D'));
             $i++;
         } while ($i < 180);

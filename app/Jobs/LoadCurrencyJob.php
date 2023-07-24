@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Parser;
 use App\Parser\Infrastructure\Models\CurrencyModel;
 use App\Parser\Services\CurrencyService;
 use DateTime;
@@ -38,6 +39,11 @@ class LoadCurrencyJob implements ShouldQueue
             $service = new CurrencyService();
             $storage = new CurrencyModel();
             $service->parseDate($storage,$this->date);
+            $parser = Parser::firstWhere('date', $this->date->format('y-m-d'));
+            $parser->state = 2;
+            $parser->save();
+
+
         }catch (Exception $e)
         {
             Log::error($e->getMessage());
